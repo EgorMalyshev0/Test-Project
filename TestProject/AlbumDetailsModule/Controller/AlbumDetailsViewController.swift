@@ -41,7 +41,7 @@ class AlbumDetailsViewController: UIViewController {
         if let album = album {
             collectionNameLabel.text = album.collectionName
             artistNameLabel.text = album.artistName
-            genreLabel.text = album.primaryGenreName
+            genreLabel.text = album.primaryGenreName.uppercased()
             separatorView.layer.cornerRadius = separatorView.frame.width / 2
             releaseYearLabel.text = album.releaseDate
             copyrightLabel.text = album.copyright
@@ -50,11 +50,8 @@ class AlbumDetailsViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         songsTableView.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
         guard album != nil else { return }
-        Loader.shared.loadSongs(collectionId: album!.collectionId) { (songs) in
+        Loader.loadSongs(collectionId: album!.collectionId) { (songs) in
             self.songs = songs
             self.songsTableView.reloadData()
         }

@@ -13,7 +13,7 @@ class AlbumsSearchViewController: UIViewController {
     
     // MARK: - IBoutlets
     
-    @IBOutlet weak var albumsCollectionView: AlbumsCollectionView!
+    @IBOutlet weak var albumsCollectionView: UICollectionView!
     @IBOutlet weak var centerLabel: UILabel!
     @IBOutlet weak var searchBar: UISearchBar!
 
@@ -63,7 +63,7 @@ class AlbumsSearchViewController: UIViewController {
         searchBar.reactive.text.debounce(for: 0.5)
             .ignoreNils()
             .observeNext { (text) in
-                Loader.shared.loadAlbums(searchRequest: text) { (albums) in
+                Loader.loadAlbums(searchRequest: text) { (albums) in
                     for album in albums {
                         self.albums.append(album)
                     }
@@ -77,19 +77,17 @@ class AlbumsSearchViewController: UIViewController {
 
 extension AlbumsSearchViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return albumsCollectionView.countSize()
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return albumsCollectionView.sectionInsets
-    }
+        let flowLayout = collectionViewLayout as! UICollectionViewFlowLayout
+        let width = self.view.frame.width
+        let itemsPerRow: CGFloat = 2
+        let paddingSpace = flowLayout.sectionInset.left + flowLayout.sectionInset.right + flowLayout.minimumInteritemSpacing * (itemsPerRow - 1)
+        let availableWidth = width - paddingSpace
+        let widthPerItem = availableWidth / itemsPerRow
+        
+        // This value is needed to count cell's height correctly. (In fact it's the fixed height of stackView in cell)
+        let fixedValue: CGFloat = 40
 
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return albumsCollectionView.minimumLineSpacing
-    }
-
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return albumsCollectionView.minimumItemSpacing
+        return CGSize(width: widthPerItem, height: widthPerItem + fixedValue)
     }
 }
 

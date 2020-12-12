@@ -5,20 +5,22 @@
 //  Created by Egor Malyshev on 04.12.2020.
 //
 
-import Foundation
+import UIKit
 
 class Loader {
-
-    static let shared = Loader()
     
     // Loading albums info from ITunes API
-    func loadAlbums(searchRequest: String, completion: @escaping([Album])->()){
+    class func loadAlbums(searchRequest: String, completion: @escaping([Album])->()){
         let transformedSearchRequest = searchRequest.applyingTransform(.toLatin, reverse: false)
         let finalSearchRequest = (transformedSearchRequest != nil) ? transformedSearchRequest! : searchRequest
         let urlString = "https://itunes.apple.com/search?term=" + finalSearchRequest + "&entity=album"
         guard let url = URL(string: urlString) else { return }
         let request = URLRequest(url: url)
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+            if let error = error {
+                print(error.localizedDescription)
+                return
+            }
             if let data = data,
                let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments),
                let jsonDict = json as? NSDictionary {
@@ -40,12 +42,16 @@ class Loader {
     }
     
     // Loading list of songs of the album
-    func loadSongs(collectionId: Int, completion: @escaping([Song])->()){
+    class func loadSongs(collectionId: Int, completion: @escaping([Song])->()){
         let collectionIdString = String(collectionId)
         let urlString = "https://itunes.apple.com/lookup?id=" + collectionIdString + "&entity=song"
         guard let url = URL(string: urlString) else { return }
         let request = URLRequest(url: url)
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+            if let error = error {
+                print(error.localizedDescription)
+                return
+            }
             if let data = data,
                let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments),
                let jsonDict = json as? NSDictionary {
@@ -64,14 +70,34 @@ class Loader {
         }
         task.resume()
     }
-    
-    func getImage (urlString: String, completion: @escaping(Data) -> Void) {
-        DispatchQueue.global().async {
-            guard let url = URL(string: urlString), let data = try? Data(contentsOf: url) else { return }
+}
+
+var imageCache = NSCache<AnyObject, AnyObject>()
+
+extension UIImageView {
+
+    // Loading image from cache or with url request
+    func loadImage(urlString: String) {
+        
+        if let cacheImage = imageCache.object(forKey: urlString as AnyObject) as? UIImage {
+            self.image = cacheImage
+            return
+        }
+        
+        guard let url = URL(string: urlString) else { return }
+        
+        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+            if let error = error {
+                print("Couldn't download image: ", error)
+                return
+            }
+            guard let data = data, let image = UIImage(data: data) else { return }
+            imageCache.setObject(image, forKey: urlString as AnyObject)
             DispatchQueue.main.async {
-                completion (data)
+                self.image = image
             }
         }
+        task.resume()
     }
 }
 

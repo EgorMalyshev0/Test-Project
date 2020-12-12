@@ -19,16 +19,18 @@ class AlbumCollectionViewCell: UICollectionViewCell {
     
     //MARK: - Class methods
 
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        albumImageView.image = nil
+    }
+    
     func configurate(from album: Album) {
         collectionNameLabel.text = album.collectionName
         artistNameLabel.text = album.artistName
-        Loader.shared.getImage(urlString: album.artworkUrl) { (data) in
-            if let image = UIImage(data: data){
-                self.albumImageView.image = image
-            }
-        }
+        albumImageView.loadImage(urlString: album.artworkUrl)
         albumImageView.layer.cornerRadius = 6
         albumImageView.layer.borderWidth = 0.3
         albumImageView.layer.borderColor = UIColor.gray.cgColor
     }
 }
+

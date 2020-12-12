@@ -16,15 +16,6 @@ class SongTableViewCell: UITableViewCell {
     @IBOutlet weak var explicitnessView: UIView!
     
     //MARK: - Class methods
-
-    override func awakeFromNib() {
-        super.awakeFromNib()
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-    }
     
     func configure(from song: Song) {
         trackNumberLabel.text = String(song.trackNumber)
