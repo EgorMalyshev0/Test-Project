@@ -18,9 +18,9 @@ class SongTableViewCell: UITableViewCell {
     //MARK: - Class methods
     
     func configure(from song: Song) {
-        trackNumberLabel.text = String(song.trackNumber)
+        trackNumberLabel.text = String(song.trackNumber!)
         trackNameLabel.text = song.trackName
-        if !song.isExplicit{
+        if song.trackExplicitness! == .notExplicit {
             explicitnessView.isHidden = true
         }
         explicitnessView.layer.cornerRadius = 2

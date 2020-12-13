@@ -20,6 +20,7 @@ class AlbumDetailsViewController: UIViewController {
     @IBOutlet weak var songsTableView: UITableView!
     @IBOutlet weak var songsTableViewHeight: NSLayoutConstraint!
     @IBOutlet weak var copyrightLabel: UILabel!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     //MARK: - Class properties
     
@@ -32,27 +33,16 @@ class AlbumDetailsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let image = albumImage{
-            albumImageView.image = image
-            albumImageView.layer.cornerRadius = 6
-            albumImageView.layer.borderWidth = 0.3
-            albumImageView.layer.borderColor = UIColor.gray.cgColor
-        }
-        if let album = album {
-            collectionNameLabel.text = album.collectionName
-            artistNameLabel.text = album.artistName
-            genreLabel.text = album.primaryGenreName.uppercased()
-            separatorView.layer.cornerRadius = separatorView.frame.width / 2
-            releaseYearLabel.text = album.releaseDate
-            copyrightLabel.text = album.copyright
-        }
+        configurateViews()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         songsTableView.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
         guard album != nil else { return }
-        Loader.loadSongs(collectionId: album!.collectionId) { (songs) in
-            self.songs = songs
+        Loader.loadSongs(collectionId: album!.collectionId) { (response) in
+            self.songs = response.results.filter{$0.wrapperType == .track}
+            self.activityIndicator.stopAnimating()
+            self.copyrightLabel.isHidden = false
             self.songsTableView.reloadData()
         }
     }
@@ -68,6 +58,23 @@ class AlbumDetailsViewController: UIViewController {
                 let newSize = newValue as! CGSize
                 songsTableViewHeight.constant = newSize.height
             }
+        }
+    }
+    
+    func configurateViews(){
+        if let image = albumImage{
+            albumImageView.image = image
+            albumImageView.layer.cornerRadius = 6
+            albumImageView.layer.borderWidth = 0.3
+            albumImageView.layer.borderColor = UIColor.gray.cgColor
+        }
+        if let album = album {
+            collectionNameLabel.text = album.collectionName
+            artistNameLabel.text = album.artistName
+            genreLabel.text = album.primaryGenreName.uppercased()
+            separatorView.layer.cornerRadius = separatorView.frame.width / 2
+            releaseYearLabel.text = album.releaseDate.yearString()
+            copyrightLabel.text = album.copyright
         }
     }
 }

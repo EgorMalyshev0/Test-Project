@@ -27,7 +27,7 @@ class AlbumCollectionViewCell: UICollectionViewCell {
     func configurate(from album: Album) {
         collectionNameLabel.text = album.collectionName
         artistNameLabel.text = album.artistName
-        albumImageView.loadImage(urlString: album.artworkUrl)
+        albumImageView.loadImage(urlString: album.artworkUrl100)
         albumImageView.layer.cornerRadius = 6
         albumImageView.layer.borderWidth = 0.3
         albumImageView.layer.borderColor = UIColor.gray.cgColor

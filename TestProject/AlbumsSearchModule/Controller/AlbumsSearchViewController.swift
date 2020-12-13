@@ -19,7 +19,7 @@ class AlbumsSearchViewController: UIViewController {
 
     //MARK: - Class properties
     
-    var albums: MutableObservableArray<Album> = MutableObservableArray([])
+    var albums: [Album] = []
      
     //MARK: - UIViewController events
     
@@ -27,7 +27,7 @@ class AlbumsSearchViewController: UIViewController {
         super.viewDidLoad()
         
         searchBar.delegate = self
-        configureRx()
+//        setupSearchBarListener()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -42,40 +42,80 @@ class AlbumsSearchViewController: UIViewController {
     
     //MARK: - Class methods
 
-    func configureRx()  {
-        albums.bind(to: albumsCollectionView) { (dataSource, indexPath, collectionView) -> UICollectionViewCell in
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "albumView", for: indexPath) as! AlbumCollectionViewCell
-            cell.configurate(from: dataSource[indexPath.row])
-            return cell
-        }
-        
-        searchBar.reactive.text.debounce(for: 0.15)
-            .ignoreNils()
-            .map {$0.isEmpty ? false : true}
-            .bind(to: centerLabel.reactive.isHidden)
-        
-        searchBar.reactive.text.debounce(for: 0.1)
-            .ignoreNils()
-            .observeNext { (text) in
-                self.albums.removeAll()
-            }
-        
-        searchBar.reactive.text.debounce(for: 0.5)
-            .ignoreNils()
-            .observeNext { (text) in
-                Loader.loadAlbums(searchRequest: text) { (albums) in
-                    for album in albums {
-                        self.albums.append(album)
-                    }
-                }
-            }
+//    fileprivate func setupSearchBarListener(){
+//        let publisher = NotificationCenter.default.publisher(for: UISearchTextField.textDidChangeNotification, object: searchBar.searchTextField)
+//        publisher.sink { (str) in
+//            print("123")
+//        }
+//        publisher.map {
+//            (($0.object as! UISearchTextField).text)
+//        }
+//        .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
+//            .sink { (text) in
+//                Loader.loadAlbums(searchRequest: text ?? "") { (response) in
+//                    self.albums = response.results.sorted { $0.collectionName < $1.collectionName }
+//                    self.albumsCollectionView.reloadData()
+//                }
+//        }
     }
-
-}
+    
+    
+    
+//    func configureRx()  {
+//        albums.bind(to: albumsCollectionView) { (dataSource, indexPath, collectionView) -> UICollectionViewCell in
+//            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "albumView", for: indexPath) as! AlbumCollectionViewCell
+//            cell.configurate(from: dataSource[indexPath.row])
+//            return cell
+//        }
+        
+//        searchBar.reactive.text.debounce(for: 0.15)
+//            .ignoreNils()
+//            .map {$0.isEmpty ? false : true}
+//            .bind(to: centerLabel.reactive.isHidden)
+//        combination.map{$0 ? "Nothing found" : "Enter your search request"}
+//            .bind(to: centerLabel.reactive.text)
+//
+//        searchBar.reactive.text.debounce(for: 0.15)
+//            .ignoreNils()
+//            .map {$0.isEmpty ? false : true}
+//            .bind(to: centerLabel.reactive.isHidden)
+//
+//        albums.map {$0.collection.isEmpty ? "Nothing found" : "Enter your search request"}
+//            .bind(to: centerLabel.reactive.text)
+//
+//        searchBar.reactive.text.debounce(for: 0.1)
+//            .ignoreNils()
+//            .observeNext { (text) in
+//                self.albums.removeAll()
+//            }
+//
+//        searchBar.reactive.text.ignoreNils()
+//            .filter {$0.count > 0}
+//            .debounce(for: 0.5)
+//            .observeNext { (text) in
+//                Loader.loadAlbums(searchRequest: text) { (response) in
+//                    let sortedArray = response.results.sorted { $0.collectionName < $1.collectionName }
+//                    for album in sortedArray {
+//                        self.albums.append(album)
+//                    }
+//                }
+//            }
+//    }
+//}
 
     //MARK: - UICollectionViewDelegateFlowLayout methods
 
-extension AlbumsSearchViewController: UICollectionViewDelegateFlowLayout {
+extension AlbumsSearchViewController: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        albums.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "albumView", for: indexPath) as! AlbumCollectionViewCell
+        cell.configurate(from: albums[indexPath.row])
+        return cell
+    }
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let flowLayout = collectionViewLayout as! UICollectionViewFlowLayout
         let width = self.view.frame.width
@@ -94,6 +134,14 @@ extension AlbumsSearchViewController: UICollectionViewDelegateFlowLayout {
     //MARK: - UISearchBarDelegate methods
 
 extension AlbumsSearchViewController: UISearchBarDelegate{
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        Loader.loadAlbums(searchRequest: searchText) { (response) in
+            let sortedArray = response.results.sorted { $0.collectionName < $1.collectionName }
+            self.albums = sortedArray
+            self.albumsCollectionView.reloadData()
+        }
+    }
+    
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         searchBar.endEditing(true)
     }

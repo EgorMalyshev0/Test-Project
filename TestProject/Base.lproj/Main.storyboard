@@ -245,12 +245,15 @@
                                                     <outlet property="delegate" destination="C88-9b-TIg" id="pfE-ez-w86"/>
                                                 </connections>
                                             </tableView>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Copyright" textAlignment="justified" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4Bd-w5-TV9">
+                                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Copyright" textAlignment="justified" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4Bd-w5-TV9">
                                                 <rect key="frame" x="17" y="782.5" width="380" height="18"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                 <color key="textColor" systemColor="secondaryLabelColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
+                                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="LgX-mP-gde">
+                                                <rect key="frame" x="197" y="334" width="20" height="20"/>
+                                            </activityIndicatorView>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
@@ -271,6 +274,8 @@
                                             <constraint firstItem="RUw-mC-1py" firstAttribute="centerX" secondItem="yem-L0-ubL" secondAttribute="centerX" id="e2F-29-4us"/>
                                             <constraint firstItem="4Bd-w5-TV9" firstAttribute="top" secondItem="WgQ-vS-uya" secondAttribute="bottom" constant="15" id="gnJ-OJ-IjO"/>
                                             <constraint firstItem="bRa-R6-adx" firstAttribute="leading" secondItem="yem-L0-ubL" secondAttribute="leading" constant="15" id="j9Z-jC-fue"/>
+                                            <constraint firstItem="LgX-mP-gde" firstAttribute="top" secondItem="UHg-LY-Ni5" secondAttribute="bottom" constant="20" id="nA3-nx-S0h"/>
+                                            <constraint firstItem="LgX-mP-gde" firstAttribute="centerX" secondItem="yem-L0-ubL" secondAttribute="centerX" id="s3g-qW-ylF"/>
                                             <constraint firstItem="RUw-mC-1py" firstAttribute="top" secondItem="yem-L0-ubL" secondAttribute="top" constant="25" id="zKK-Ac-2Yv"/>
                                         </constraints>
                                     </view>
@@ -296,6 +301,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="activityIndicator" destination="LgX-mP-gde" id="KRp-l6-68A"/>
                         <outlet property="albumImageView" destination="RUw-mC-1py" id="bzy-eD-YQm"/>
                         <outlet property="artistNameLabel" destination="73l-p8-zos" id="FbZ-Bd-iHs"/>
                         <outlet property="collectionNameLabel" destination="bRa-R6-adx" id="eJ0-Ac-tKE"/>
