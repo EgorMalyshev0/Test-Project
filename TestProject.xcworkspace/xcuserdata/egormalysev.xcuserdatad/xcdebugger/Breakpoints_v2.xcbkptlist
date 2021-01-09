@@ -7,49 +7,17 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "E557144D-29D5-4C5D-8DB1-596112CCE3EB"
+            uuid = "424F273D-611B-4775-9B46-B5C2C3788210"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TestProject/AlbumsSearchModule/Controller/AlbumsSearchViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "54"
-            endingLineNumber = "54"
-            landmarkName = "setupSearchBarListener()"
+            startingLineNumber = "53"
+            endingLineNumber = "53"
+            landmarkName = "makeNetworkCall(forSearchRequest:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "E557144D-29D5-4C5D-8DB1-596112CCE3EB - d6064c918c8be43a"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "TestProject.AlbumsSearchViewController.(setupSearchBarListener in _A669B15FC85BDC08E4DD7D7809F3A703)() -&gt; ()"
-                  moduleName = "TestProject"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/egormalysev/Desktop/SWIFT/TestProject/TestProject/AlbumsSearchModule/Controller/AlbumsSearchViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "51"
-                  endingLineNumber = "51"
-                  offsetFromSymbolStart = "1198">
-               </Location>
-               <Location
-                  uuid = "E557144D-29D5-4C5D-8DB1-596112CCE3EB - 15e1e5520ac5c927"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #2 (Swift.Optional&lt;Swift.String&gt;) -&gt; () in TestProject.AlbumsSearchViewController.(setupSearchBarListener in _A669B15FC85BDC08E4DD7D7809F3A703)() -&gt; ()"
-                  moduleName = "TestProject"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/egormalysev/Desktop/SWIFT/TestProject/TestProject/AlbumsSearchModule/Controller/AlbumsSearchViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "52"
-                  endingLineNumber = "52"
-                  offsetFromSymbolStart = "109">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

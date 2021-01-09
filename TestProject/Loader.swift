@@ -51,20 +51,16 @@ class Loader {
         }
         task.resume()
     }
-}
-
-var imageCache = NSCache<AnyObject, AnyObject>()
-
-extension UIImageView {
-
+    
     // Loading image from cache or with url request
-    func loadImage(urlString: String) {
+    class func loadImage(url: URL?, completion: @escaping(UIImage?, URL?)->()) {
+        guard let temporaryUrl = url else { return }
+        let urlString = temporaryUrl.absoluteString
         if let cacheImage = imageCache.object(forKey: urlString as AnyObject) as? UIImage {
-            self.image = cacheImage
+            completion(cacheImage, temporaryUrl)
             return
         }
-        guard let url = URL(string: urlString) else { return }
-        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+        let task = URLSession.shared.dataTask(with: temporaryUrl) { (data, response, error) in
             if let error = error {
                 print("Couldn't download image: ", error)
                 return
@@ -72,10 +68,17 @@ extension UIImageView {
             guard let data = data, let image = UIImage(data: data) else { return }
             imageCache.setObject(image, forKey: urlString as AnyObject)
             DispatchQueue.main.async {
-                self.image = image
+                completion(image, temporaryUrl)
             }
         }
         task.resume()
     }
+}
+
+var imageCache = NSCache<AnyObject, AnyObject>()
+
+extension UIImageView {
+
+    
 }
 

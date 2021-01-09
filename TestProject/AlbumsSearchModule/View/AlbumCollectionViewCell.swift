@@ -17,17 +17,23 @@ class AlbumCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var artistNameLabel: UILabel!
     @IBOutlet weak var stackViewTopConstraint: NSLayoutConstraint!
     
-    //MARK: - Class methods
-
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        albumImageView.image = nil
+    private var imageURL: URL? {
+        didSet {
+            albumImageView.image = nil
+            Loader.loadImage(url: imageURL) { (img, temporaryUrl) in
+                if temporaryUrl == self.imageURL {
+                    self.albumImageView.image = img
+                }
+            }
+        }
     }
+    
+    //MARK: - Class methods
     
     func configurate(from album: Album) {
         collectionNameLabel.text = album.collectionName
         artistNameLabel.text = album.artistName
-        albumImageView.loadImage(urlString: album.artworkUrl100)
+        imageURL = URL(string: album.artworkUrl100)
         albumImageView.layer.cornerRadius = 6
         albumImageView.layer.borderWidth = 0.3
         albumImageView.layer.borderColor = UIColor.gray.cgColor
