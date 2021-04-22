@@ -38,8 +38,8 @@ class AlbumDetailsViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         songsTableView.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
-        guard album != nil else { return }
-        Loader.loadSongs(collectionId: album!.collectionId) { (response) in
+        guard let album = album else { return }
+        NetworkManager.loadSongs(collectionId: album.collectionId) { (response) in
             self.songs = response.results.filter{$0.wrapperType == .track}
             self.activityIndicator.stopAnimating()
             self.copyrightLabel.isHidden = false

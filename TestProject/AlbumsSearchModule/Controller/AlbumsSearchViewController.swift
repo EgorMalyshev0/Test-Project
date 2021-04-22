@@ -6,17 +6,16 @@
 //
 
 import UIKit
-import Bond
 import ReactiveKit
 
 class AlbumsSearchViewController: UIViewController {
     
-    // MARK: - IBoutlets
+    // MARK: - Elements
     
     @IBOutlet weak var albumsCollectionView: UICollectionView!
     @IBOutlet weak var centerLabel: UILabel!
 
-    //MARK: - Class properties
+    // MARK: - Property
     
     var albums: [Album] = [] {
         didSet {
@@ -26,7 +25,7 @@ class AlbumsSearchViewController: UIViewController {
     let debouncer = Debouncer(timeInterval: 0.5)
     let searchController = UISearchController(searchResultsController: nil)
      
-    //MARK: - UIViewController events
+    // MARK: - AlbumsSearchViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,10 +44,8 @@ class AlbumsSearchViewController: UIViewController {
             vc.albumImage = cell.albumImageView.image
         }
     }
-    
-    //MARK: - Class methods
-    
-    func makeNetworkCall(forSearchRequest request: String){
+        
+    func retrieveAlbums(forSearchRequest request: String){
         if request.isEmpty {
             albums.removeAll()
             centerLabel.text = "Enter your search request"
@@ -57,22 +54,26 @@ class AlbumsSearchViewController: UIViewController {
             centerLabel.isHidden = true
             debouncer.renewInterval()
             debouncer.handler = {
-                Loader.loadAlbums(searchRequest: request) { (response) in
-                    if !response.results.isEmpty {
-                        self.albums = response.results.sorted { $0.collectionName < $1.collectionName }
-                    } else {
-                        self.albums.removeAll()
-                        self.centerLabel.text = "Nothing found"
-                        self.centerLabel.isHidden = false
+                NetworkManager().fetchAlbums(searchRequest: request) { (albums, errorDescription) in
+                    DispatchQueue.main.async {
+                        if let error = errorDescription {
+                            print(error)
+                        }
+                        guard !albums.isEmpty else {
+                            self.albums.removeAll()
+                            self.centerLabel.text = "Nothing found"
+                            self.centerLabel.isHidden = false
+                            return
+                        }
+                        self.albums = albums.sorted { $0.collectionName < $1.collectionName }
                     }
                 }
             }
         }
     }
-
 }
 
-    //MARK: - UICollectionViewDelegateFlowLayout methods
+    //MARK: - UICollectionViewDelegateFlowLayout
 
 extension AlbumsSearchViewController: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -100,7 +101,7 @@ extension AlbumsSearchViewController: UICollectionViewDelegateFlowLayout, UIColl
     }
 }
 
-    //MARK: - UISearchBarDelegate methods
+    //MARK: - UISearchBarDelegate
 
 extension AlbumsSearchViewController: UISearchBarDelegate{
 
@@ -112,7 +113,7 @@ extension AlbumsSearchViewController: UISearchBarDelegate{
 extension AlbumsSearchViewController: UISearchResultsUpdating{
     func updateSearchResults(for searchController: UISearchController) {
         let bar = searchController.searchBar
-        makeNetworkCall(forSearchRequest: bar.text!)
+        retrieveAlbums(forSearchRequest: bar.text!)
     }
 }
 

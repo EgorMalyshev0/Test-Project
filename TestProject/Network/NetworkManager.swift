@@ -7,29 +7,33 @@
 
 import UIKit
 
-class Loader {
+class NetworkManager {
     
-    class func loadAlbums(searchRequest: String, completion: @escaping(AlbumListResponse)->()){
-        let transformedSearchRequest = searchRequest.applyingTransform(.toLatin, reverse: false)
-        let finalSearchRequest = (transformedSearchRequest != nil) ? transformedSearchRequest! : searchRequest
-        let urlString = "https://itunes.apple.com/search?term=" + finalSearchRequest + "&entity=album"
-        guard let url = URL(string: urlString) else { return }
-        let request = URLRequest(url: url)
-        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+    var session: URLSession
+    
+    init() {
+        let config = URLSessionConfiguration.default
+        self.session = URLSession(configuration: config)
+    }
+    
+    func fetchAlbums(searchRequest: String, completion: @escaping (_ albums: [Album],_ error: String?) -> Void) {
+        let transformedRequest = SearchRequestValidator().validate(searchRequest)
+        guard let request = URLRequestBuilder().makeURLRequest(request: transformedRequest) else { return }
+        session.dataTask(with: request) { (data, response, error) in
             if let error = error {
-                print(error.localizedDescription)
-                return
+                completion([], error.localizedDescription)
             }
             let decoder = JSONDecoder()
             decoder.dateDecodingStrategy = .iso8601
-            if let data = data,
-               let parsedResult: AlbumListResponse = try? decoder.decode(AlbumListResponse.self, from: data){
-                DispatchQueue.main.async {
-                    completion(parsedResult)
+            if let data = data{
+                do {
+                    let response = try decoder.decode(AlbumListResponse.self, from: data)
+                    completion(response.results, nil)
+                } catch {
+                    completion([], error.localizedDescription)
                 }
             }
-        }
-        task.resume()
+        }.resume()
     }
     
     // Loading list of songs of the album
@@ -73,6 +77,7 @@ class Loader {
         }
         task.resume()
     }
+    
 }
 
 var imageCache = NSCache<AnyObject, AnyObject>()

@@ -20,7 +20,7 @@ class AlbumCollectionViewCell: UICollectionViewCell {
     private var imageURL: URL? {
         didSet {
             albumImageView.image = nil
-            Loader.loadImage(url: imageURL) { (img, temporaryUrl) in
+            NetworkManager.loadImage(url: imageURL) { (img, temporaryUrl) in
                 if temporaryUrl == self.imageURL {
                     self.albumImageView.image = img
                 }
